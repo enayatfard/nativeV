@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import RecordButton from "./RecordButton";
+import ReRecordUploadVideo from "../ReRecordUploadVideo";
 
 const CameraCapture = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -76,6 +77,8 @@ const CameraCapture = () => {
         isRecording={isRecording}
         handleRecord={isRecording ? stopRecording : startRecording}
       />
+
+      <ReRecordUploadVideo />
     </div>
   );
 };
