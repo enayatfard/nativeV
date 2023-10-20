@@ -1,12 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import RecordButton from "./RecordButton";
 import ReRecordUploadVideo from "../ReRecordUploadVideo";
+import VideoPlayer from "../VideoPlayer";
+
+const mimeType = "video/webm";
 
 const CameraCapture = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaRecorder = useRef<MediaRecorder | null>(null);
   const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
+  const [recorded, setRecorded] = useState<boolean>(false);
 
   const [isRecording, setIsRecording] = useState(false);
 
@@ -34,51 +38,64 @@ const CameraCapture = () => {
     }
   }, []);
 
-  const startRecording = () => {
-    const stream = videoRef.current?.srcObject as MediaStream;
-    mediaRecorderRef.current = new MediaRecorder(stream);
-    mediaRecorderRef.current.ondataavailable = (e) => {
-      if (e.data.size > 0) {
-        setRecordedChunks((prev) => [...prev, e.data]);
-      }
-    };
-    mediaRecorderRef.current.onstop = () => {
-      console.log(recordedChunks);
-      const blob = new Blob(recordedChunks, { type: "video/webm" });
-      console.log(blob);
-      const url = URL.createObjectURL(blob);
-      setRecordedVideoUrl(url);
-    };
-    mediaRecorderRef.current.start();
+  const startRecording = async () => {
     setIsRecording(true);
+
+    const stream = videoRef.current?.srcObject as MediaStream;
+
+    const media = new MediaRecorder(stream, { mimeType });
+    mediaRecorder.current = media;
+    mediaRecorder.current.start();
+
+    const localVideoChunks: Blob[] = [];
+
+    mediaRecorder.current.ondataavailable = (event) => {
+      if (typeof event.data === "undefined") return;
+      if (event.data.size === 0) return;
+      localVideoChunks.push(event.data);
+    };
+    setRecordedChunks(localVideoChunks);
   };
 
   const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
     setIsRecording(false);
-  };
 
-  console.log(recordedVideoUrl);
+    mediaRecorder.current?.stop();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    mediaRecorder.current.onstop = () => {
+      const videoBlob = new Blob(recordedChunks, { type: mimeType });
+      const videoUrl = URL.createObjectURL(videoBlob);
+      setRecordedVideoUrl(videoUrl);
+      setRecorded(true);
+      setRecordedChunks([]);
+    };
+  };
 
   return (
     <div className="flex flex-col items-center space-y-3">
-      {recordedVideoUrl ? (
-        <video src={recordedVideoUrl} controls className="rounded-xl w-96" />
+      {recordedVideoUrl && recorded ? (
+        <VideoPlayer
+          options={{
+            sources: [
+              {
+                src: recordedVideoUrl,
+                type: "video/webm",
+              },
+            ],
+          }}
+        />
       ) : (
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          className="rounded-xl w-96"
+        <video ref={videoRef} className="rounded-xl w-96" />
+      )}
+      {recorded ? (
+        <ReRecordUploadVideo />
+      ) : (
+        <RecordButton
+          isRecording={isRecording}
+          handleRecord={isRecording ? stopRecording : startRecording}
         />
       )}
-      <RecordButton
-        isRecording={isRecording}
-        handleRecord={isRecording ? stopRecording : startRecording}
-      />
-
-      <ReRecordUploadVideo />
     </div>
   );
 };
