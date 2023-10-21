@@ -1,47 +1,49 @@
-import * as React from "react";
+import React, { useEffect, useRef } from "react";
 import videojs from "video.js";
-// Styles
+import Player from "video.js/dist/types/player";
 import "video.js/dist/video-js.css";
 
 interface IVideoPlayerProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  options: any;
+  src: string | null;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const initialOptions: any = {
+const initialOptions = {
   controls: true,
-  fluid: true,
-  loop: true,
   class: "medium",
-  aspectRatio: "4:3",
-  controlBar: {
-    volumePanel: {
-      inline: false,
-    },
-  },
 };
 
-const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
-  const videoNode = React.useRef<HTMLVideoElement>();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const player = React.useRef<any>();
+const VideoPlayer: React.FC<IVideoPlayerProps> = ({ src }) => {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const player = useRef<Player | null>(null);
 
-  React.useEffect(() => {
-    player.current = videojs(videoNode.current, {
-      ...initialOptions,
-      ...options,
-    }).ready(function () {
-      // console.log('onPlayerReady', this);
-    });
+  useEffect(() => {
+    if (src) {
+      if (player.current) {
+        // If the player instance exists, dispose of it before creating a new one
+        player.current.dispose();
+      }
+
+      // Create a new Video.js player with the updated source
+      player.current = videojs(videoRef.current, {
+        ...initialOptions,
+        sources: [
+          {
+            src: src,
+            type: "video/webm",
+          },
+        ],
+      }).ready(() => {});
+    }
+
     return () => {
       if (player.current) {
         player.current.dispose();
+        player.current = null;
       }
     };
-  }, [options]);
+  }, [src]);
 
-  return <video ref={videoNode} className="video-js" />;
+  return <video ref={videoRef} className="video-js" />;
 };
 
 export default VideoPlayer;

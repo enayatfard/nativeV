@@ -10,8 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/video.js": "7.3.55",
+    "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
+    "@types/video.js": "7.3.55",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "video.js": "^8.6.0"

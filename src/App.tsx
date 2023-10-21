@@ -1,4 +1,4 @@
-import CameraCapture from "./components/CaptureVideo/CameraCapture";
+import CameraCapture from "./components/CameraCapture";
 
 function App() {
   return (
