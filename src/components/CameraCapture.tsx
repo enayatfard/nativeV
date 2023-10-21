@@ -77,10 +77,26 @@ const CameraCapture = () => {
     startCamera();
   };
 
+  const videoJsOptions = {
+    autoplay: true,
+    controls: true,
+    responsive: true,
+    fluid: true,
+    sources: [
+      {
+        src: recordedVideoUrl,
+        type: "video/mp4",
+      },
+    ],
+  };
+
   return (
     <div className="flex flex-col items-center space-y-3 justify-between h-screen p-2 sm:justify-center">
-      <VideoPlayer src={recordedVideoUrl} />
-      <video ref={videoRef} />
+      {recordedVideoUrl ? (
+        <VideoPlayer options={videoJsOptions} />
+      ) : (
+        <video ref={videoRef} />
+      )}
       {recordedVideoUrl ? (
         <ReRecordUploadVideo onClick={ReRecord} />
       ) : (
