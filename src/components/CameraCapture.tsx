@@ -19,6 +19,7 @@ const CameraCapture = () => {
           // Request access to the user's camera
           const stream = await navigator.mediaDevices.getUserMedia({
             video: true,
+            audio: true,
           });
 
           // Set the video stream as the source
@@ -95,7 +96,7 @@ const CameraCapture = () => {
       {recordedVideoUrl ? (
         <VideoPlayer options={videoJsOptions} />
       ) : (
-        <video ref={videoRef} />
+        <video ref={videoRef} className="w-96" />
       )}
       {recordedVideoUrl ? (
         <ReRecordUploadVideo onClick={ReRecord} />

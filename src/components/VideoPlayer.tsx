@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import videojs from "video.js";
 import Player from "video.js/dist/types/player";
 import "video.js/dist/video-js.css";
@@ -6,8 +6,7 @@ import "video.js/dist/video-js.css";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
 export const VideoJS = (props) => {
-  console.log(props);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Player | null>(null);
   const { options } = props;
 
@@ -44,7 +43,12 @@ export const VideoJS = (props) => {
     };
   }, [playerRef]);
 
-  return <div ref={videoRef} className="video-js h-fit" />;
+  return (
+    <div
+      ref={videoRef as RefObject<HTMLDivElement>}
+      className="flex video-js h-fit w-96"
+    />
+  );
 };
 
 export default VideoJS;

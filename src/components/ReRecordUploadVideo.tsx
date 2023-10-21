@@ -15,18 +15,16 @@ const ReRecordUploadVideo = (props: Props) => {
   }
   return (
     <>
-      <div className="w-fit px-1 items-center flex justify-center h-14 rounded-full border-2 border-gray-200">
-        <div className="flex space-x-6 justify-between items-center">
-          <button
-            onClick={handleReRecord}
-            className="rounded-full p-2 hover:bg-gray-100"
-          >
-            <ArrowPathIcon className="w-7 text-red-600" />
-          </button>
-          <button className="rounded-full p-2 hover:bg-gray-100">
-            <ArrowUpTrayIcon className="w-7 cursor-pointer" />
-          </button>
-        </div>
+      <div className="flex items-center justify-center space-x-5">
+        <button
+          onClick={handleReRecord}
+          className="items-center flex justify-center w-14 h-14 rounded-full border-2 border-gray-200 cursor-pointer"
+        >
+          <ArrowPathIcon className="w-7 text-red-600" />
+        </button>
+        <button className="items-center flex justify-center w-14 h-14 rounded-full border-2 border-gray-200 cursor-pointer">
+          <ArrowUpTrayIcon className="w-7 cursor-pointer" />
+        </button>
       </div>
       <Dialog
         isOpen={show}
