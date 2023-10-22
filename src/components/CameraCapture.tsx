@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import VideoPlayer from "./VideoPlayer";
 import RecordButton from "./RecordButton";
 import ReRecordUploadVideo from "./ReRecordUploadVideo";
+import ToggleCamera from "./ToggleCamera";
 
 const CameraCapture = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -11,6 +12,8 @@ const CameraCapture = () => {
   const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
 
   const [isRecording, setIsRecording] = useState<boolean>(false);
+
+  let mediaStream: MediaStream | null = null;
 
   const startCamera = async () => {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -26,6 +29,7 @@ const CameraCapture = () => {
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
             videoRef.current.play();
+            mediaStream = stream; // Store the MediaStream object
           }
         } catch (error) {
           console.error("Error accessing the camera:", error);
@@ -33,6 +37,19 @@ const CameraCapture = () => {
       })();
     } else {
       console.error("WebRTC is not supported in this browser.");
+    }
+  };
+
+  const stopCamera = () => {
+    if (mediaStream) {
+      const tracks = mediaStream.getTracks();
+      tracks.forEach((track) => track.stop());
+
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
+      }
+      mediaStream = null;
     }
   };
 
@@ -101,10 +118,13 @@ const CameraCapture = () => {
       {recordedVideoUrl ? (
         <ReRecordUploadVideo onClick={ReRecord} />
       ) : (
-        <RecordButton
-          isRecording={isRecording}
-          onClick={isRecording ? stopRecording : startRecording}
-        />
+        <div className="flex space-x-2">
+          <RecordButton
+            isRecording={isRecording}
+            onClick={isRecording ? stopRecording : startRecording}
+          />
+          <ToggleCamera start={startCamera} stop={stopCamera} />
+        </div>
       )}
     </div>
   );
