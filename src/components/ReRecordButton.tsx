@@ -21,8 +21,11 @@ const ReRecordButton = (props: Props) => {
         >
           <ArrowPathIcon className="w-7 text-red-600" />
         </button>
-        <button className="items-center flex justify-center w-14 h-14 rounded-full border-2 border-gray-200 cursor-pointer">
-          <ArrowUpTrayIcon className="w-7 cursor-pointer" />
+        <button
+          disabled
+          className="items-center flex justify-center w-14 h-14 rounded-full border-2 border-gray-200 cursor-not-allowed"
+        >
+          <ArrowUpTrayIcon className="w-7 opacity-20" />
         </button>
       </div>
       <Dialog
