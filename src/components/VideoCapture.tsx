@@ -1,17 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import VideoPlayer from "./VideoPlayer";
 import RecordButton from "./RecordButton";
-import ReRecordUploadVideo from "./ReRecordUploadVideo";
-import ToggleCamera from "./ToggleCamera";
+import ToggleCameraButton from "./ToggleCameraButton";
 
-const CameraCapture = () => {
+interface Props {
+  onRecorded: (src: string | null) => void;
+}
+
+const VideoCapture = (props: Props) => {
+  const { onRecorded } = props;
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const mediaRecorder = useRef<MediaRecorder | null>(null);
 
-  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
-  const [recordedVideoUrl, setRecordedVideoUrl] = useState<string | null>(null);
-
   const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
 
   let mediaStream: MediaStream | null = null;
 
@@ -53,10 +55,6 @@ const CameraCapture = () => {
     }
   };
 
-  useEffect(() => {
-    startCamera();
-  }, []);
-
   const startRecording = async () => {
     setIsRecording(true);
 
@@ -85,48 +83,27 @@ const CameraCapture = () => {
       const videoBlob = new Blob(recordedChunks, { type: "video/webm" });
       const videoUrl = URL.createObjectURL(videoBlob);
 
-      setRecordedVideoUrl(videoUrl);
+      onRecorded(videoUrl);
       setRecordedChunks([]);
     };
   };
 
-  const ReRecord = () => {
-    setRecordedVideoUrl(null);
+  useEffect(() => {
     startCamera();
-  };
-
-  const videoJsOptions = {
-    autoplay: true,
-    controls: true,
-    responsive: true,
-    fluid: true,
-    sources: [
-      {
-        src: recordedVideoUrl,
-        type: "video/mp4",
-      },
-    ],
-  };
+  }, []);
 
   return (
-    <div className="flex flex-col items-center space-y-3 justify-between h-screen p-2 sm:justify-center">
-      {recordedVideoUrl ? (
-        <VideoPlayer options={videoJsOptions} />
-      ) : (
-        <video ref={videoRef} className="w-96" />
-      )}
-      {recordedVideoUrl ? (
-        <ReRecordUploadVideo onClick={ReRecord} />
-      ) : (
-        <div className="flex space-x-2">
-          <RecordButton
-            isRecording={isRecording}
-            onClick={isRecording ? stopRecording : startRecording}
-          />
-          <ToggleCamera start={startCamera} stop={stopCamera} />
-        </div>
-      )}
+    <div className="flex flex-col items-center space-y-5">
+      <video ref={videoRef} className="w-96" />
+      <div className="flex space-x-2">
+        <RecordButton
+          isRecording={isRecording}
+          onClick={isRecording ? stopRecording : startRecording}
+        />
+        <ToggleCameraButton start={startCamera} stop={stopCamera} />
+      </div>
     </div>
   );
 };
-export default CameraCapture;
+
+export default VideoCapture;

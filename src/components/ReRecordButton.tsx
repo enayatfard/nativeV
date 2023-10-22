@@ -5,14 +5,13 @@ import { ArrowPathIcon, ArrowUpTrayIcon } from "@heroicons/react/24/outline";
 interface Props {
   onClick: () => void;
 }
-const ReRecordUploadVideo = (props: Props) => {
+const ReRecordButton = (props: Props) => {
   const { onClick } = props;
 
   const [show, setShow] = useState<boolean>(false);
 
-  function handleReRecord() {
-    setShow(true);
-  }
+  const handleReRecord = () => setShow(true);
+
   return (
     <>
       <div className="flex items-center justify-center space-x-5">
@@ -37,4 +36,4 @@ const ReRecordUploadVideo = (props: Props) => {
   );
 };
 
-export default ReRecordUploadVideo;
+export default ReRecordButton;

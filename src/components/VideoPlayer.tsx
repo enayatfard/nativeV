@@ -1,17 +1,36 @@
-import { RefObject, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import videojs from "video.js";
 import Player from "video.js/dist/types/player";
 import "video.js/dist/video-js.css";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
-export const VideoJS = (props) => {
+const VIDEO_OPTIONS = {
+  fluid: true,
+  autoplay: true,
+  controls: true,
+  responsive: true,
+};
+
+interface Props {
+  src: string;
+}
+
+export const VideoPlayer = (props: Props) => {
+  const { src } = props;
+
   const videoRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<Player | null>(null);
 
-  const { options } = props;
-
   useEffect(() => {
+    const options = {
+      ...VIDEO_OPTIONS,
+      sources: [
+        {
+          src,
+          type: "video/mp4",
+        },
+      ],
+    };
+
     if (!playerRef.current) {
       const videoElement = document.createElement("video-js");
 
@@ -22,11 +41,10 @@ export const VideoJS = (props) => {
       playerRef.current = videojs(videoElement, options, () => {});
     } else {
       const player = playerRef.current;
-
       player.autoplay(options.autoplay);
       player.src(options.sources);
     }
-  }, [options, videoRef]);
+  }, [src, videoRef]);
 
   useEffect(() => {
     const player = playerRef.current;
@@ -39,12 +57,7 @@ export const VideoJS = (props) => {
     };
   }, [playerRef]);
 
-  return (
-    <div
-      ref={videoRef as RefObject<HTMLDivElement>}
-      className="flex video-js h-fit w-96"
-    />
-  );
+  return <div ref={videoRef} className="flex video-js h-fit w-96" />;
 };
 
-export default VideoJS;
+export default VideoPlayer;

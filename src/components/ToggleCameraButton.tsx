@@ -9,7 +9,7 @@ interface Props {
   stop: () => void;
   start: () => void;
 }
-const ToggleCamera = (props: Props) => {
+const ToggleCameraButton = (props: Props) => {
   const { start, stop } = props;
 
   const [show, setshow] = useState(true);
@@ -35,4 +35,4 @@ const ToggleCamera = (props: Props) => {
   );
 };
 
-export default ToggleCamera;
+export default ToggleCameraButton;
